@@ -12,7 +12,7 @@ run_unicorn() {
 
 restart_unicorn_if_dead() {
     PID=`cat unicorn.pid`
-    echo "IN RESTART: Current unicorn pid: $PID"
+    # echo "IN RESTART: Current unicorn pid: $PID"
     if [ ! -e /proc/$PID -a /proc/$PID/exe ]; then
 	echo "Dead unicorn detected. Resurrecting now..."
         run_unicorn
@@ -57,6 +57,7 @@ do
         git pull
 	kill_unicorn
 	sleep 1
+        echo "Birthing current unicorn."
 	restart_unicorn_if_dead
 	sleep 2
 	restart_unicorn_if_dead
