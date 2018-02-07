@@ -27,13 +27,8 @@ kill_unicorn() {
 
 cd /home/pi/src/UnicornReborn
 
-UPSTREAM=${1:-'@{u}'}
-LOCAL=$(git rev-parse @)
-REMOTE=$(git rev-parse "$UPSTREAM")
-BASE=$(git merge-base @ "$UPSTREAM")
-
 echo "Birthing current unicorn."
-run_unicorn
+restart_unicorn_if_dead
 sleep 5
 restart_unicorn_if_dead
 sleep 5
@@ -41,13 +36,23 @@ sleep 5
 echo "Starting detection loop."
 while :
 do
-    sleep 60
+    sleep 30
     echo "Detecting if unicorn is dead or obsolete."
- 
+
+    git fetch 
+
+    UPSTREAM=${1:-'@{u}'}
+    echo $UPSTREAM
+    LOCAL=$(git rev-parse @{0})
+    echo $LOCAL
+    REMOTE=$(git rev-parse "$UPSTREAM")
+    echo $REMOTE
+
+
     if [ $LOCAL = $REMOTE ]; then
         echo "Unicorn is not obsolete."
  	restart_unicorn_if_dead 
-    elif [ $LOCAL = $BASE ]; then
+    else
         echo "Killing obsolete unicorn."
         git pull
 	kill_unicorn
