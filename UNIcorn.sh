@@ -1,5 +1,10 @@
 #!/bin/sh
 
+REPO_REMOTE=git@github.com:emmatoday/UnicornReborn
+SRC_DIR=/home/pi/src
+REPO_DIR=${SRC_DIR}/UnicornReborn
+REPO_TEMP_DIR=${SRC_DIR}/UnicornReborn.temp
+
 get_unicorn_pid() {
     PID=`cat unicorn.pid`
     return `cat unicorn.pid`
@@ -13,7 +18,7 @@ run_unicorn() {
 restart_unicorn_if_dead() {
     PID=`cat unicorn.pid`
     # echo "IN RESTART: Current unicorn pid: $PID"
-    if [ ! -e /proc/$PID -a /proc/$PID/exe ]; then
+    if ([ ! -f /home/pi/src/UnicornReborn/unicorn.pid] || [ ! -e /proc/$PID -a /proc/$PID/exe ]); then
 	echo "Dead unicorn detected. Resurrecting now..."
         run_unicorn
     fi
@@ -23,6 +28,18 @@ kill_unicorn() {
     PID=`cat unicorn.pid`
     echo "Killing unicorn."
     kill -9 $PID
+}
+
+create_temp_repo {
+    cd ${SRC_DIR}
+    git clone ${REPO_REMOTE} ${REPO_TEMP_DIR}
+    cd ${REPO_DIR}
+}
+
+update_code {
+    cd ../UnicornReborn.temp || create_temp_repo && cd ../UnicornReborn.temp
+
+    rm -R UnicornReborn.temp
 }
 
 cd /home/pi/src/UnicornReborn
@@ -54,7 +71,7 @@ do
  	restart_unicorn_if_dead 
     else
         echo "Killing obsolete unicorn."
-        git pull
+	update_code
 	kill_unicorn
 	sleep 1
         echo "Birthing current unicorn."
