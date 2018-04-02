@@ -30,17 +30,17 @@ kill_unicorn() {
     kill -9 $PID
 }
 
-create_temp_repo {
+create_temp_repo() {
     cd ${SRC_DIR}
     git clone ${REPO_REMOTE} ${REPO_TEMP_DIR}
     cd ${REPO_DIR}
 }
 
-update_code {
+update_code() {
     echo "Starting code update."
 
     # REMOVE EXISTING TEMP DIR IF IT EXISTS
-    rm -R $REPO_TEMP_DIR || true
+    rm -Rf $REPO_TEMP_DIR || true
 
     # CREATE TEMP REPO IF NEEDED AND UPDATE IT
     create_temp_repo
@@ -50,7 +50,7 @@ update_code {
     cd $REPO_DIR
     git pull temp master || echo "Error pulling in changes from temp repo."
 
-    rm -R $REPO_TEMP_DIR || echo "Error removing temp repo."
+    rm -Rf $REPO_TEMP_DIR || echo "Error removing temp repo."
 }
 
 cd /home/pi/src/UnicornReborn
