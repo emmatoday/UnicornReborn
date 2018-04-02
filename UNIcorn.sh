@@ -6,8 +6,8 @@ REPO_DIR=${SRC_DIR}/UnicornReborn
 REPO_TEMP_DIR=${SRC_DIR}/UnicornReborn.temp
 
 get_unicorn_pid() {
-    PID=`cat unicorn.pid`
-    return `cat unicorn.pid`
+    PID=`cat unicorn.pid` || PID=55555
+    return $PID
 }
 
 run_unicorn() {
@@ -16,7 +16,7 @@ run_unicorn() {
 }
 
 restart_unicorn_if_dead() {
-    PID=`cat unicorn.pid`
+    PID=`cat unicorn.pid` || PID=55555
     # echo "IN RESTART: Current unicorn pid: $PID"
     if ([ ! -f /home/pi/src/UnicornReborn/unicorn.pid] || [ ! -e /proc/$PID -a /proc/$PID/exe ]); then
 	echo "Dead unicorn detected. Resurrecting now..."
