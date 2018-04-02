@@ -37,9 +37,20 @@ create_temp_repo {
 }
 
 update_code {
-    cd ../UnicornReborn.temp || create_temp_repo && cd ../UnicornReborn.temp
+    echo "Starting code update."
 
-    rm -R UnicornReborn.temp
+    # REMOVE EXISTING TEMP DIR IF IT EXISTS
+    rm -R $REPO_TEMP_DIR || true
+
+    # CREATE TEMP REPO IF NEEDED AND UPDATE IT
+    create_temp_repo
+
+
+    echo "Pulling in changes from temp repo."
+    cd $REPO_DIR
+    git pull temp master || echo "Error pulling in changes from temp repo."
+
+    rm -R $REPO_TEMP_DIR || echo "Error removing temp repo."
 }
 
 cd /home/pi/src/UnicornReborn
@@ -64,7 +75,6 @@ do
     echo $LOCAL
     REMOTE=$(git rev-parse "$UPSTREAM")
     echo $REMOTE
-
 
     if [ $LOCAL = $REMOTE ]; then
         echo "Unicorn is not obsolete."
